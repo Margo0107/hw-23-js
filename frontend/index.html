@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>todo</title>
+  </head>
+  <body>
+    <input type="text" id="taskInput" />
+    <button onclick="addTodo()">add</button>
+    <ul id="todoList"></ul>
+    <script>
+      const API = "http://localhost:3000/api/todos";
+
+      async function fetchTodos() {
+        const res = await fetch(API);
+        const todos = await res.json();
+        const list = document.getElementById("todoList");
+
+        while (list.firstChild) {
+          list.removeChild(list.firstChild);
+        }
+
+        todos.forEach((todo) => {
+          const li = document.createElement("li");
+          li.textContent = todo.text;
+          list.appendChild(li);
+        });
+      }
+      async function addTodo() {
+        const input = document.getElementById("taskInput");
+        await fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: input.value }),
+        });
+        input.value = "";
+        fetchTodos();
+      }
+      fetchTodos();
+    </script>
+  </body>
+</html>
